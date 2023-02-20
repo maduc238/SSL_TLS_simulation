@@ -1,4 +1,4 @@
-# SSL TLS simulation
+# SSL/TLS simulation
 Mô phỏng hệ thống giao thức mạng bảo mật SSL/TLS, cấp chứng chỉ X.509 và giao tiếp bảo mật
 
 ![image](https://user-images.githubusercontent.com/95759699/220095451-4757e6ed-d8c3-42ff-bb2d-939f2a46410b.png)
