@@ -1,0 +1,7 @@
+Foo DEFINITIONS ::= BEGIN
+
+RSAPublicKey ::= SEQUENCE {
+         modulus            INTEGER,    -- n
+         publicExponent     INTEGER  }  -- e
+
+END
