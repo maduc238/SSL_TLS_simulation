@@ -2,8 +2,8 @@ import asn1tools
 import rsa
 import base64
 
-RFC5280_ASN_PATH = 'rfc5280.asn'
-RFC3279_ASN_PATH = 'rfc3279.asn'
+RFC5280_ASN_PATH = 'asn/rfc5280.asn'
+RFC3279_ASN_PATH = 'asn/rfc3279.asn'
 
 foo_5280 = asn1tools.compile_files(RFC5280_ASN_PATH)
 foo_3279 = asn1tools.compile_files(RFC3279_ASN_PATH)
@@ -102,12 +102,12 @@ def ReadHandshakeMessageData(mess):
     return mess_type, handshake_mess
 
 def BlockCipherEncodeASN1(key, pubKey):
-    foo = asn1tools.compile_files('block_cipher.asn')
+    foo = asn1tools.compile_files('asn/block_cipher.asn')
     encoded = foo.encode('BlockCipher', {'algorithm':'AES128', 'key':(key, 128)})
     return rsa.encrypt(encoded, pubKey)
 
 def BlockCipherDecodeASN1(data, privKey):
-    foo = asn1tools.compile_files('block_cipher.asn')
+    foo = asn1tools.compile_files('asn/block_cipher.asn')
     data = rsa.decrypt(data, privKey)
     decoded = foo.decode('BlockCipher', data)
     return decoded
