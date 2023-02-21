@@ -1,0 +1,63 @@
+Message:
+
+2 byte: address
+--- x n
+1 byte: Content type
+2 byte: Legecy version
+2 byte: Length
+  --- x m nếu thuộc về 22
+  1 byte: Message type
+  2 byte: Message type length
+  ... byte: handshake message data
+  ---
+  --- x mếu thuộc về 21
+  1 byte: Level
+  1 byte: Description
+  ---
+---
+
+Với content:
+- 20: ChangeCipherSpec (0x14)
+- 22: handshake (0x16)
+      0	HelloRequest
+      1	ClientHello
+      2	ServerHello
+      4	NewSessionTicket
+      11	Certificate
+      12	ServerKeyExchange
+      13	CertificateRequest
+      14	ServerHelloDone
+      15	CertificateVerify
+      16	ClientKeyExchange
+      20	Finished
+- 21: alert (0x15)
+      21	Decryption failed
+      40	Handshake failure
+      41	No certificate
+      42	Bad certificate
+      43	Unsupported certificate
+      45	Certificate expired
+      48	Unknown CA
+      116	Certificate required
+
+
+A                          B
+   --- ClientHello ------>
+
+   <--- ServerHello ------
+
+   <--- Certificate ------
+   <--- ServerKeyExchange-
+   <---CertificateRequest-
+   <--- ServerHelloDone --
+
+   --- Certificate ------>
+   --- ClientKeyExchange->
+   --- CertificateVerify->
+
+   --- ChangeCipherSpec ->
+   --- Finished --------->
+
+   <--- ChangeCipherSpec -
+   <--- Finished ---------
+

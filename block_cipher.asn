@@ -1,0 +1,8 @@
+Foo DEFINITIONS ::= BEGIN
+
+BlockCipher  ::=  SEQUENCE  {
+     algorithm      IA5String,
+     key            BIT STRING
+}
+
+END

@@ -23,6 +23,8 @@ def PrintCertificate(cer_data):
     print(BEGIN_TEXT)
     for i in range(len(cer_data)//64 + 1):
         print(cer_data[64*i:64*(i+1)].decode())
+        print('...')
+        break
     print(END_TEXT)
 
 class Certificate_PEM_file:
@@ -50,6 +52,7 @@ class Certificate_PEM_file:
         # self.publickey_publicExponent = self.publickey.e
         self.valid = False
 
+        # Xác thực chữ ký số
         try:
             ver = rsa.verify(self.tbsCertificate, self.signature, self.CApub)
             if ver == 'SHA-1': self.valid = True
@@ -80,3 +83,31 @@ class Certificate_PEM:
             if ver == 'SHA-1': self.valid = True
         except:
             return
+
+def ReadHandshakeMessageData(mess):
+    i = 0
+    mess_type = []
+    handshake_mess = []
+    while i <= len(mess):
+        payload_len = int(mess[i+1])*256+int(mess[i+2])
+        if payload_len == 0:
+            handshake_mess.append(None)
+        else:
+            handshake_mess.append(mess[3+i:3+payload_len+i])
+        mess_type.append(mess[i])
+
+        i += 3 + payload_len
+        if i >= len(mess): break
+
+    return mess_type, handshake_mess
+
+def BlockCipherEncodeASN1(key, pubKey):
+    foo = asn1tools.compile_files('block_cipher.asn')
+    encoded = foo.encode('BlockCipher', {'algorithm':'AES128', 'key':(key, 128)})
+    return rsa.encrypt(encoded, pubKey)
+
+def BlockCipherDecodeASN1(data, privKey):
+    foo = asn1tools.compile_files('block_cipher.asn')
+    data = rsa.decrypt(data, privKey)
+    decoded = foo.decode('BlockCipher', data)
+    return decoded
