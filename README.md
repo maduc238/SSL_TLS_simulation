@@ -15,6 +15,29 @@ Trong project này sẽ có 4 môi trường chính:
 - Certificate Authority server: `CA.py` server xác thực người dùng và cung cấp chứng chỉ
 - Client 0, 1: `client0.py` và `client1.py` là hai người dùng cần được cấp chứng chỉ và giao tiếp với nhau
 
+Luồng giao tiếp giữa hai thiết bị qua giao thức SSL/TLS:
+```
+User 0                            User 1
+  | --- ClientHello --------------> |
+  |                                 |
+  | <-------------- ServerHello --- |
+  |                                 |
+  | <-------------- Certificate --- |
+  | <-------- ServerKeyExchange --- |
+  | <------- CertificateRequest --- |
+  | <---------- ServerHelloDone --- |
+  |                                 |
+  | --- Certificate --------------> |
+  | --- ClientKeyExchange --------> |
+  | --- CertificateVerify --------> |
+  |                                 |
+  | --- ChangeCipherSpec ---------> |
+  | --- Finished -----------------> |
+  |                                 |
+  | <--------- ChangeCipherSpec --- |
+  | <----------------- Finished --- |
+```
+
 # Cấu hình
 Địa chỉ IP `host` của các thiết bị phải gọi đúng địa chỉ IP của Internet
 
