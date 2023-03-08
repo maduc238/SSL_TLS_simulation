@@ -6,7 +6,7 @@ Mô phỏng hệ thống giao thức mạng bảo mật SSL/TLS, cấp chứng c
 # Requirement
 Chạy trên Python3 với yêu cầu các thư viện:
 ```
-pip install asn1tools rsa
+pip install asn1tools rsa pycrypto pycryptodome
 ```
 
 # Mô hình hệ thống

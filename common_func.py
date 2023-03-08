@@ -1,6 +1,8 @@
 import asn1tools
 import rsa
 import base64
+import hashlib
+from ECDSA import *
 
 RFC5280_ASN_PATH = 'asn/rfc5280.asn'
 RFC3279_ASN_PATH = 'asn/rfc3279.asn'
@@ -15,9 +17,17 @@ def ASN1_RSAPublicKey(public_key):
     encoded = foo_3279.encode('RSAPublicKey', {'modulus': public_key.n, 'publicExponent': public_key.e})
     return (encoded, len(encoded)*8)
 
+def ASN1_ECDSAPublicKey(public_key):
+    encoded = foo_3279.encode('ECDSAPublicKey', {'qx': public_key.x, 'qy': public_key.y})
+    return (encoded, len(encoded)*8)
+
 def ASN1_DecodeRSAPublicKey(data):
     decoded = foo_3279.decode('RSAPublicKey', data)
     return rsa.PublicKey(decoded['modulus'], decoded['publicExponent'])
+
+def ASN1_DecodeECDSAPublicKey(data):
+    decoded = foo_3279.decode('ECDSAPublicKey', data)
+    return Point(decoded['qx'], decoded['qy'], secp256k1_curve_config)
 
 def PrintCertificate(cer_data):
     print(BEGIN_TEXT)
@@ -44,7 +54,6 @@ class Certificate_PEM_file:
         rfc5280_der = asn1tools.compile_files(RFC5280_ASN_PATH, codec='der')
 
         decoded = rfc5280_der.decode('Certificate', certificate)
-        
         self.signature = decoded['signature'][0]
         self.tbsCertificate = rfc5280_der.encode('TBSCertificate', decoded['tbsCertificate'])
         self.publickey = ASN1_DecodeRSAPublicKey(decoded['tbsCertificate']['subjectPublicKeyInfo']['subjectPublicKey'][0])
@@ -68,21 +77,22 @@ class Certificate_PEM:
             return
 
         rfc5280_der = asn1tools.compile_files(RFC5280_ASN_PATH, codec='der')
-
         decoded = rfc5280_der.decode('Certificate', certificate)
         
         self.signature = decoded['signature'][0]
+        self.signature_algorithm = decoded['signatureAlgorithm']['algorithm']
         self.tbsCertificate = rfc5280_der.encode('TBSCertificate', decoded['tbsCertificate'])
-        self.publickey = ASN1_DecodeRSAPublicKey(decoded['tbsCertificate']['subjectPublicKeyInfo']['subjectPublicKey'][0])
-        # self.publickey_modulus = self.publickey.n
-        # self.publickey_publicExponent = self.publickey.e
+        
         self.valid = False
 
-        try:
+        if self.signature_algorithm == '1.2.840.10045.4.3.3':
+            self.publickey = ASN1_DecodeECDSAPublicKey(decoded['tbsCertificate']['subjectPublicKeyInfo']['subjectPublicKey'][0])
+            haha = foo_3279.decode('Dss-Sig-Value', self.signature)
+            self.valid = verify_signature((haha['r'], haha['s']), int(hashlib.sha384(self.tbsCertificate).hexdigest(),16), CApub)
+        else: # sha1RSA
+            self.publickey = ASN1_DecodeRSAPublicKey(decoded['tbsCertificate']['subjectPublicKeyInfo']['subjectPublicKey'][0])
             ver = rsa.verify(self.tbsCertificate, self.signature, CApub)
             if ver == 'SHA-1': self.valid = True
-        except:
-            return
 
 def ReadHandshakeMessageData(mess):
     i = 0

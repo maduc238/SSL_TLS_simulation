@@ -4,4 +4,24 @@ RSAPublicKey ::= SEQUENCE {
          modulus            INTEGER,    -- n
          publicExponent     INTEGER  }  -- e
 
+ECDSAPublicKey ::= SEQUENCE {
+         qx            INTEGER,
+         qy            INTEGER  }
+
+Dss-Parms  ::=  SEQUENCE  {
+      p             INTEGER,
+      q             INTEGER,
+      g             INTEGER  }
+
+Dss-Sig-Value  ::=  SEQUENCE  {
+      r       INTEGER,
+      s       INTEGER  }
+
+Duc-Encode ::= SEQUENCE {
+        ax          INTEGER,
+        ay          INTEGER,
+        bx          INTEGER,
+        by          INTEGER
+}
+
 END
